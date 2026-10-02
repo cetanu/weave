@@ -1,0 +1,18 @@
+[package]
+name = "weave"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Fast, non-mutating deep merges for Python dictionaries"
+readme = "README.md"
+
+[lib]
+name = "_weave"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = "0.29.3"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

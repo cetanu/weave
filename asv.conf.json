@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "project": "weave-merge",
+  "project_url": "",
+  "repo": ".",
+  "branches": ["master"],
+  "show_commit_url": "",
+  "environment_type": "virtualenv",
+  "pythons": ["3.14"],
+  "env_dir": ".asv/env",
+  "benchmark_dir": "benchmarks/asv",
+  "results_dir": ".asv/results",
+  "html_dir": ".asv/html",
+  "build_command": [
+    "python -m pip wheel --no-deps --wheel-dir {build_cache_dir} {build_dir}"
+  ]
+}

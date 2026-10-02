@@ -1,0 +1,43 @@
+[build-system]
+requires = ["maturin>=1.15,<2"]
+build-backend = "maturin"
+
+[project]
+name = "weave-merge"
+dynamic = ["version"]
+description = "Fast, non-mutating deep merges for Python dictionaries"
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Typing :: Typed",
+]
+
+[dependency-groups]
+dev = [
+    "hypothesis>=6.140",
+    "maturin>=1.15,<2",
+    "asv>=0.6.6,<0.7",
+    "pytest>=8.4",
+    "ruff>=0.13",
+]
+
+[tool.maturin]
+python-source = "python"
+module-name = "weave._weave"
+profile = "release"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-config --strict-markers"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
