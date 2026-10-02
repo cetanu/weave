@@ -51,8 +51,7 @@ def cases():
         for i in range(100)
     }
     nested_right = {
-        f"service{i}": {"tls": {"enabled": True}, "plugins": ["metrics"]}
-        for i in range(100)
+        f"service{i}": {"tls": {"enabled": True}, "plugins": ["metrics"]} for i in range(100)
     }
     deep_source, deep_dest = {"left": 1}, {"right": 2}
     for _ in range(100):
@@ -89,10 +88,7 @@ def cases():
 
 class MergeBenchmarks:
     def setup(self):
-        self.workloads = {
-            case.name: case()
-            for case in cases()
-        }
+        self.workloads = {case.name: case() for case in cases()}
         for name, (left, right, concat_lists) in self.workloads.items():
             assert merge(left, right, concat_lists=concat_lists) == python_merge(
                 left, right, concat_lists=concat_lists
