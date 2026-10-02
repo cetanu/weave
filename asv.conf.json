@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "project": "weave-merge",
+  "project": "weaved",
   "project_url": "",
   "repo": ".",
   "branches": ["master"],

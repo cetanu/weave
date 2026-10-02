@@ -5,6 +5,7 @@ edition = "2024"
 rust-version = "1.85"
 description = "Fast, non-mutating deep merges for Python dictionaries"
 readme = "README.md"
+repository = "https://github.com/cetanu/weave"
 
 [lib]
 name = "_weave"

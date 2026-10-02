@@ -3,7 +3,7 @@ requires = ["maturin>=1.15,<2"]
 build-backend = "maturin"
 
 [project]
-name = "weave-merge"
+name = "weaved"
 dynamic = ["version"]
 description = "Fast, non-mutating deep merges for Python dictionaries"
 readme = "README.md"

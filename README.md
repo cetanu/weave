@@ -3,8 +3,14 @@
 A Rust-backed Python library for merging nested dictionaries. One function,
 no runtime Python dependencies, and no mutation of your inputs.
 
-Install from this checkout with `python -m pip install .` (requires Rust).
-The extension uses [PyO3](https://pyo3.rs/) and is built with
+Install the `weaved` distribution from PyPI:
+
+```sh
+python -m pip install weaved
+```
+
+The import package remains `weave`. Installing from source requires Rust; the
+extension uses [PyO3](https://pyo3.rs/) and is built with
 [maturin](https://www.maturin.rs/).
 
 ```python
