@@ -1,6 +1,7 @@
 name: CI
 
 on:
+  workflow_dispatch:
   push:
     branches: ["**"]
     tags:
@@ -64,7 +65,7 @@ jobs:
           if-no-files-found: ignore
 
   sdist:
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -76,7 +77,7 @@ jobs:
           path: dist/*
 
   publish:
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
     needs: [test, sdist]
     runs-on: ubuntu-latest
     permissions:
