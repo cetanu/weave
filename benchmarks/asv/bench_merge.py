@@ -65,6 +65,10 @@ def cases():
         }
         for i in range(100)
     }
+    wide_left = {f"key{i}": i for i in range(10_000)}
+    wide_right = {f"key{i}": -i for i in range(10_000)}
+    wide_left["key9999"] = {"before": [1]}
+    wide_right["key9999"] = {"after": [2]}
     return [
         BenchCase("tiny", {"a": 1, "b": 2}, {"b": 3, "c": 4}),
         BenchCase(
@@ -83,6 +87,7 @@ def cases():
             {"items": [{"id": i, "tags": [i]} for i in range(500, 1_000)]},
         ),
         BenchCase("overwritten", {"items": overwritten}, {"items": None}),
+        BenchCase("wide_mixed_late", wide_left, wide_right),
     ]
 
 
@@ -152,3 +157,9 @@ class MergeBenchmarks:
 
     def time_overwritten_python(self):
         self._run("overwritten", "python")
+
+    def time_wide_mixed_late_weave(self):
+        self._run("wide_mixed_late", "weave")
+
+    def time_wide_mixed_late_python(self):
+        self._run("wide_mixed_late", "python")
