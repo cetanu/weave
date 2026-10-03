@@ -56,3 +56,5 @@ version. Large integer-key maps also showed no significant change. A string
 map with one integer key at the end measured 285 ± 3 µs on the published source
 and 313 ± 3 µs on current `master` (about 10% slower, below the 1.15 threshold);
 the optimized path must scan keys to prove it can safely bulk-update them.
+Copies of scalar-only dictionaries from 1 to 256 entries showed no significant
+change, so the direct scan remains unconditional in the subtree-copy path.
