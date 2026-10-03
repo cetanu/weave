@@ -1,5 +1,5 @@
 use pyo3::prelude::*;
-use pyo3::types::{PyDict, PyList};
+use pyo3::types::{PyDict, PyList, PyString};
 
 use crate::recursion::RecursionGuard;
 
@@ -27,8 +27,10 @@ pub(crate) fn merge_dicts<'py>(
         let mut value_ptr = std::ptr::null_mut();
         let mut inspected = 0;
         let mut prefix_contains_containers = false;
+        let mut exact_string_keys = true;
+        let mut container_entries = Vec::new();
 
-        while inspected < 64 {
+        while inspected < right.len() {
             // SAFETY: `right` remains alive and unmodified for this scan, and
             // the GIL is held for the full call.
             if unsafe {
@@ -37,18 +39,35 @@ pub(crate) fn merge_dicts<'py>(
             {
                 break;
             }
+            // SAFETY: PyDict_Next returned a live key pointer while `right`
+            // is alive and the GIL remains held.
+            if unsafe { pyo3::ffi::PyUnicode_CheckExact(key_ptr) == 0 } {
+                exact_string_keys = false;
+                break;
+            }
+
             // SAFETY: PyDict_Next returned a live value pointer while `right`
             // is alive and the GIL remains held.
-            if unsafe {
+            let is_container = unsafe {
                 pyo3::ffi::PyDict_Check(value_ptr) != 0 || pyo3::ffi::PyList_Check(value_ptr) != 0
-            } {
+            };
+            if inspected < 64 && is_container {
                 prefix_contains_containers = true;
                 break;
+            } else if is_container {
+                // SAFETY: both pointers are borrowed from the live `right` dict;
+                // the constructors increment their references for these Bounds.
+                container_entries.push(unsafe {
+                    (
+                        Bound::from_borrowed_ptr(py, key_ptr),
+                        Bound::from_borrowed_ptr(py, value_ptr),
+                    )
+                });
             }
             inspected += 1;
         }
 
-        if prefix_contains_containers {
+        if !exact_string_keys || prefix_contains_containers {
             for (key, right_value) in right.iter() {
                 result.set_item(
                     &key,
@@ -59,31 +78,17 @@ pub(crate) fn merge_dicts<'py>(
         }
 
         result.update(right.as_mapping())?;
-        loop {
-            // SAFETY: `right` is still alive and unmodified, and the GIL is held.
-            if unsafe {
-                pyo3::ffi::PyDict_Next(right.as_ptr(), &mut position, &mut key_ptr, &mut value_ptr)
-            } == 0
-            {
-                break;
-            }
-
-            // SAFETY: PyDict_Next returned a live value pointer under the GIL.
-            if unsafe {
-                pyo3::ffi::PyDict_Check(value_ptr) != 0 || pyo3::ffi::PyList_Check(value_ptr) != 0
-            } {
-                // SAFETY: both pointers are borrowed from the live `right` dict;
-                // the constructors increment their references for these Bounds.
-                let key = unsafe { Bound::from_borrowed_ptr(py, key_ptr) };
-                let right_value = unsafe { Bound::from_borrowed_ptr(py, value_ptr) };
-                result.set_item(
-                    &key,
-                    merge_entry(left, &key, &right_value, concat_lists, depth + 1)?,
-                )?;
-            }
+        for (key, right_value) in container_entries {
+            result.set_item(
+                &key,
+                merge_entry(left, &key, &right_value, concat_lists, depth + 1)?,
+            )?;
         }
         return Ok(result);
-    } else if !right.iter().any(|(_, value)| is_container(&value)) {
+    } else if right
+        .iter()
+        .all(|(key, value)| key.is_exact_instance_of::<PyString>() && !is_container(&value))
+    {
         result.update(right.as_mapping())?;
         return Ok(result);
     }
