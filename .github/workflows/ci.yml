@@ -34,6 +34,13 @@ jobs:
       - run: cargo fmt --check
       - run: uv run --no-sync -- cargo clippy --locked --all-targets -- -D warnings
       - run: uv run --no-sync maturin build --release --locked
+        if: matrix.os != 'ubuntu-latest'
+      - uses: PyO3/maturin-action@v1.51.0
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          maturin-version: 1.15.0
+          manylinux: "2_28"
+          args: --release --locked -i python${{ matrix.python }} --compatibility pypi --out target/wheels
       - uses: actions/upload-artifact@v7
         with:
           name: wheel-${{ matrix.os }}-py${{ matrix.python }}
