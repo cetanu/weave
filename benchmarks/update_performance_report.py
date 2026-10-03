@@ -31,8 +31,11 @@ def load_measurements(commit):
         values = {}
         for label, benchmark in BENCHMARKS.items():
             result = result_file["results"].get(f"bench_merge.MergeBenchmarks.{benchmark}")
-            if result and isinstance(result[0], (int, float)):
-                values[label] = result[0]
+            measurement = result[0] if result else None
+            while isinstance(measurement, list) and measurement:
+                measurement = measurement[0]
+            if isinstance(measurement, (int, float)):
+                values[label] = measurement
         if values:
             return result_file["date"], values
     raise SystemExit(f"No CPython 3.14 ASV results found for {commit}")
