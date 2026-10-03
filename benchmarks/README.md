@@ -46,15 +46,16 @@ ASV stores benchmark records in `.asv/results`. After editing Rust, ASV builds
 the selected revision in release mode before measuring it.
 
 The scalar subtree copy path was then changed to scan dictionary entries
-without creating Python wrappers for scalar values. Interleaved CPython 3.14
-ASV measurements put this 10,000-key copy at 47.2 ± 0.2 µs before and 36.9 ±
-0.2 µs after (about 22% faster). With a nested value at the end, it improved
-from 47.7 ± 0.1 µs to 37.1 ± 0.3 µs (about 22%). A two-round CPython 3.11 comparison measured
-47.7 ± 0.6 µs and 41.9 ± 0.8 µs (about 12% faster, below ASV's 1.15 change
-threshold). The flat merge workload showed no significant change on either
-version. Large integer-key maps also showed no significant change. A string
-map with one integer key at the end measured 285 ± 3 µs on the published source
-and 313 ± 3 µs on current `master` (about 10% slower, below the 1.15 threshold);
-the optimized path must scan keys to prove it can safely bulk-update them.
-Copies of scalar-only dictionaries from 1 to 256 entries showed no significant
-change, so the direct scan remains unconditional in the subtree-copy path.
+without creating Python wrappers for scalar values. Ten-repeat interleaved
+CPython 3.14 ASV measurements put this 10,000-key copy at 49.7 ± 0.4 µs before
+and 38.6 ± 1 µs after (about 22% faster). With a nested value at the end, it
+improved from 47.7 ± 0.1 µs to 37.1 ± 0.3 µs (about 22%). A two-round CPython
+3.11 comparison measured 47.7 ± 0.6 µs and 41.9 ± 0.8 µs (about 12% faster,
+below ASV's 1.15 change threshold). The flat merge workload showed no
+significant change on either version. Large integer-key maps also showed no
+significant change. A string map with one integer key at the end measured
+285 ± 3 µs on the published source and 313 ± 3 µs on current `master` (about
+10% slower, below the 1.15 threshold); the optimized path must scan keys to
+prove it can safely bulk-update them. Copies of scalar-only dictionaries from
+1 to 256 entries showed no significant change, so the direct scan remains
+unconditional in the subtree-copy path.
