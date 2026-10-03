@@ -11,5 +11,18 @@
       "list replace": 1.5298499995708426e-05,
       "list concatenate": 2.9769499999332538e-05
     }
+  },
+  {
+    "commit": "53f0b9efd7fc51d878b0868023e37e764e598d0f",
+    "date": "2026-10-03T05:02:03+00:00",
+    "benchmarks": {
+      "flat": 0.0006232244999964109,
+      "wide mixed": 0.0005331149999960871,
+      "medium mixed": 4.393499999366668e-06,
+      "subtree copy": 8.22745000021996e-05,
+      "mixed subtree copy": 8.571600000095714e-05,
+      "list replace": 3.479499999059499e-05,
+      "list concatenate": 7.107349999557755e-05
+    }
   }
 ]
