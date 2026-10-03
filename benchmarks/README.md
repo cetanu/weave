@@ -52,4 +52,7 @@ ASV measurements put this 10,000-key copy at 47.2 ± 0.2 µs before and 36.9 ±
 from 47.7 ± 0.1 µs to 37.1 ± 0.3 µs (about 22%). A two-round CPython 3.11 comparison measured
 47.7 ± 0.6 µs and 41.9 ± 0.8 µs (about 12% faster, below ASV's 1.15 change
 threshold). The flat merge workload showed no significant change on either
-version.
+version. Large integer-key maps also showed no significant change. A string
+map with one integer key at the end measured 285 ± 3 µs on the published source
+and 313 ± 3 µs on current `master` (about 10% slower, below the 1.15 threshold);
+the optimized path must scan keys to prove it can safely bulk-update them.
