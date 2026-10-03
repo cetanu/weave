@@ -48,6 +48,7 @@ jobs:
           git checkout -B master origin/master
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          find .asv/results -maxdepth 4 -type f -print
           for attempt in 1 2 3 4 5; do
             python benchmarks/update_performance_report.py "$COMMIT"
             git add benchmarks/performance-data.json benchmarks/performance.html
