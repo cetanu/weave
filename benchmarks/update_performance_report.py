@@ -25,6 +25,8 @@ def load_measurements(commit):
     files = ROOT / ".asv" / "results" / MACHINE
     for path in sorted(files.glob("*.json")):
         result_file = json.loads(path.read_text())
+        if "commit_hash" not in result_file:
+            continue
         if result_file["commit_hash"] != commit or result_file["env_name"] != ENVIRONMENT:
             continue
         values = {}
