@@ -46,7 +46,7 @@ ASV stores benchmark records in `.asv/results`. After editing Rust, ASV builds
 the selected revision in release mode before measuring it.
 
 The scalar subtree copy path was then changed to scan dictionary entries
-without creating Python wrappers for scalar values. Ten-round CPython 3.14
+without creating Python wrappers for scalar values. Interleaved CPython 3.14
 ASV measurements put this 10,000-key copy at 47.2 ± 0.2 µs before and 36.9 ±
 0.2 µs after (about 22% faster). With a nested value at the end, it improved
 from 47.7 ± 0.1 µs to 37.1 ± 0.3 µs (about 22%). A two-round CPython 3.11 comparison measured

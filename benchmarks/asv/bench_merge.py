@@ -95,9 +95,7 @@ def cases():
         BenchCase("wide_mixed_late", wide_left, wide_right),
         BenchCase("medium", medium_left, medium_right),
         BenchCase("copy_subtree", {}, {"config": copied_subtree}),
-        BenchCase(
-            "copy_subtree_mixed_late", {}, {"config": copied_subtree_mixed_late}
-        ),
+        BenchCase("copy_subtree_mixed_late", {}, {"config": copied_subtree_mixed_late}),
     ]
 
 
