@@ -63,10 +63,13 @@ For a 32-key map with a nested value last, a 20-repeat CPU-pinned comparison
 improved from 2.37 ± 0.2 µs on the published source to 1.86 ± 0.2 µs on current
 `master` (about 22% faster) on CPython 3.14. CPython 3.11 improved from 2.22 ±
 0.1 µs to 1.36 ± 0.08 µs (about 39%). The raw-scan path now starts at 8
-entries and only bulk-updates after the first 4 entries contain no nested
+entries and only bulk-updates after the first 2 entries contain no nested
 containers. Moving the cutoff from 16 to
 8 improved the 8-entry late-nested case from 1.73 ± 0.2 µs to 1.28 ± 0.2 µs
 (about 26%) in a 20-repeat CPU-pinned CPython 3.14 comparison. The matching
 CPython 3.11 run showed no significant change. Four-entry mixed maps and
 8-entry scalar-only, early-nested, prefix-boundary, and late-integer cases
 showed no significant change when lowering the cutoff.
+Lowering the prefix from 4 entries to 2 improved an 8-entry map with its
+nested value at position 2 by about 20% on CPython 3.14 and 14% on CPython 3.11;
+the early, boundary, nested, and wide cases showed no significant change.
