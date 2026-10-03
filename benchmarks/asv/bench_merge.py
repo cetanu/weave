@@ -74,6 +74,8 @@ def cases():
     copied_subtree = {f"key{i}": i for i in range(10_000)}
     copied_subtree_mixed_late = {f"key{i}": i for i in range(10_000)}
     copied_subtree_mixed_late["nested"] = {"value": [1]}
+    wide_nonstring_late = {f"key{i}": i for i in range(9_999)}
+    wide_nonstring_late[9_999] = 9_999
     return [
         BenchCase("tiny", {"a": 1, "b": 2}, {"b": 3, "c": 4}),
         BenchCase(
@@ -96,6 +98,7 @@ def cases():
         BenchCase("medium", medium_left, medium_right),
         BenchCase("copy_subtree", {}, {"config": copied_subtree}),
         BenchCase("copy_subtree_mixed_late", {}, {"config": copied_subtree_mixed_late}),
+        BenchCase("wide_nonstring_late", {}, wide_nonstring_late),
     ]
 
 
@@ -189,3 +192,9 @@ class MergeBenchmarks:
 
     def time_copy_subtree_mixed_late_python(self):
         self._run("copy_subtree_mixed_late", "python")
+
+    def time_wide_nonstring_late_weave(self):
+        self._run("wide_nonstring_late", "weave")
+
+    def time_wide_nonstring_late_python(self):
+        self._run("wide_nonstring_late", "python")
