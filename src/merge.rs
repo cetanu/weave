@@ -155,8 +155,7 @@ fn copy_value<'py>(value: &Bound<'py, PyAny>, depth: usize) -> PyResult<Bound<'p
             // SAFETY: PyDict_Next returned a live value pointer while `dict`
             // is alive and the GIL remains held.
             let is_container = unsafe {
-                pyo3::ffi::PyDict_Check(child_ptr) != 0
-                    || pyo3::ffi::PyList_Check(child_ptr) != 0
+                pyo3::ffi::PyDict_Check(child_ptr) != 0 || pyo3::ffi::PyList_Check(child_ptr) != 0
             };
             if is_container {
                 // SAFETY: both pointers are borrowed from the live `dict`;
