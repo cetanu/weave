@@ -51,7 +51,7 @@ pub(crate) fn merge_dicts<'py>(
             let is_container = unsafe {
                 pyo3::ffi::PyDict_Check(value_ptr) != 0 || pyo3::ffi::PyList_Check(value_ptr) != 0
             };
-            if inspected < 4 && is_container {
+            if inspected < 2 && is_container {
                 prefix_contains_containers = true;
                 break;
             } else if is_container {
