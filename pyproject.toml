@@ -17,6 +17,9 @@ classifiers = [
     "Typing :: Typed",
 ]
 
+[project.urls]
+Repository = "https://github.com/cetanu/weaved"
+
 [dependency-groups]
 dev = [
     "hypothesis>=6.140",
