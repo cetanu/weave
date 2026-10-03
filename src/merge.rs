@@ -20,8 +20,32 @@ pub(crate) fn merge_dicts<'py>(
         }
     }
 
-    if right.len() >= 64 && !right.iter().any(|(_, value)| is_container(&value)) {
+    if right.len() >= 64 {
+        let mut entries = right.iter();
+        let prefix_contains_containers = entries
+            .by_ref()
+            .take(64)
+            .any(|(_, value)| is_container(&value));
+
+        if prefix_contains_containers {
+            for (key, right_value) in right.iter() {
+                result.set_item(
+                    &key,
+                    merge_entry(left, &key, &right_value, concat_lists, depth + 1)?,
+                )?;
+            }
+            return Ok(result);
+        }
+
         result.update(right.as_mapping())?;
+        for (key, right_value) in entries {
+            if is_container(&right_value) {
+                result.set_item(
+                    &key,
+                    merge_entry(left, &key, &right_value, concat_lists, depth + 1)?,
+                )?;
+            }
+        }
         return Ok(result);
     }
 
