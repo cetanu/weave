@@ -75,6 +75,8 @@ def cases():
     medium_mixed_late["nested"] = {"value": [1]}
     small_mixed_late = {f"key{i}": -i for i in range(7)}
     small_mixed_late["nested"] = {"value": [1]}
+    small_mixed_early = {"nested": {"value": [1]}}
+    small_mixed_early.update({f"key{i}": -i for i in range(7)})
     small_scalar = {f"key{i}": -i for i in range(8)}
     tiny_mixed_late = {f"key{i}": -i for i in range(3)}
     tiny_mixed_late["nested"] = {"value": [1]}
@@ -107,6 +109,7 @@ def cases():
         BenchCase("medium", medium_left, medium_right),
         BenchCase("medium_mixed_late", {}, medium_mixed_late),
         BenchCase("small_mixed_late", {}, small_mixed_late),
+        BenchCase("small_mixed_early", {}, small_mixed_early),
         BenchCase("small_scalar", {}, small_scalar),
         BenchCase("tiny_mixed_late", {}, tiny_mixed_late),
         BenchCase("copy_subtree", {}, {"config": copied_subtree}),
@@ -210,6 +213,12 @@ class MergeBenchmarks:
 
     def time_small_mixed_late_python(self):
         self._run("small_mixed_late", "python")
+
+    def time_small_mixed_early_weave(self):
+        self._run("small_mixed_early", "weave")
+
+    def time_small_mixed_early_python(self):
+        self._run("small_mixed_early", "python")
 
     def time_small_scalar_weave(self):
         self._run("small_scalar", "weave")
