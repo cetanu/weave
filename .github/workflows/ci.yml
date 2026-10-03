@@ -81,7 +81,12 @@ jobs:
         env:
           BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEAD: ${{ github.sha }}
-        run: uv run asv continuous --bench '.*_weave' --factor 1.15 --interleave-rounds --split "$BASE" "$HEAD"
+        run: |
+          if git diff --quiet "$BASE" "$HEAD" -- src python/weave Cargo.toml Cargo.lock pyproject.toml; then
+            echo "Skipping ASV: no package implementation changes"
+          else
+            uv run asv continuous --bench 'time_(flat|wide_mixed_late|medium_mixed_late|copy_subtree(_mixed_late)?|list_replace|list_concat)_weave' --factor 1.15 --interleave-rounds --split "$BASE" "$HEAD"
+          fi
       - uses: actions/upload-artifact@v7
         if: always()
         with:
