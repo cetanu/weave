@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "commit": "26beec11745d59719fff2cf444a41d7fed0f7e35",
+    "date": "2026-10-03T04:58:13+00:00",
+    "benchmarks": {
+      "flat": 0.0003403834999993194,
+      "wide mixed": 0.00027897750000605015,
+      "medium mixed": 1.8024999981491874e-06,
+      "subtree copy": 4.017099999842344e-05,
+      "mixed subtree copy": 3.9248999996743805e-05,
+      "list replace": 1.5298499995708426e-05,
+      "list concatenate": 2.9769499999332538e-05
+    }
+  }
+]

@@ -8,7 +8,7 @@ body{font:15px system-ui,sans-serif;max-width:1100px;margin:2rem auto;padding:0 
 <p>Selected ASV timings on GitHub Actions, CPython 3.14. Each chart is normalized to its first recorded merge (100); lower is faster. Runner noise can affect small changes.</p>
 <div id="charts" class="grid"></div>
 <script>
-const data=[], ns='http://www.w3.org/2000/svg';
+const data=[{"commit":"26beec11745d59719fff2cf444a41d7fed0f7e35","date":"2026-10-03T04:58:13+00:00","benchmarks":{"flat":0.0003403834999993194,"wide mixed":0.00027897750000605015,"medium mixed":1.8024999981491874e-06,"subtree copy":4.017099999842344e-05,"mixed subtree copy":3.9248999996743805e-05,"list replace":1.5298499995708426e-05,"list concatenate":2.9769499999332538e-05}}], ns='http://www.w3.org/2000/svg';
 function el(tag,attrs={}){const n=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n}
 const names=[...new Set(data.flatMap(r=>Object.keys(r.benchmarks)))];
 for(const name of names){
