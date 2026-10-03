@@ -69,6 +69,8 @@ def cases():
     wide_right = {f"key{i}": -i for i in range(10_000)}
     wide_left["key9999"] = {"before": [1]}
     wide_right["key9999"] = {"after": [2]}
+    medium_left = {f"key{i}": i for i in range(32)}
+    medium_right = {f"other{i}": -i for i in range(32)}
     return [
         BenchCase("tiny", {"a": 1, "b": 2}, {"b": 3, "c": 4}),
         BenchCase(
@@ -88,6 +90,7 @@ def cases():
         ),
         BenchCase("overwritten", {"items": overwritten}, {"items": None}),
         BenchCase("wide_mixed_late", wide_left, wide_right),
+        BenchCase("medium", medium_left, medium_right),
     ]
 
 
@@ -163,3 +166,9 @@ class MergeBenchmarks:
 
     def time_wide_mixed_late_python(self):
         self._run("wide_mixed_late", "python")
+
+    def time_medium_weave(self):
+        self._run("medium", "weave")
+
+    def time_medium_python(self):
+        self._run("medium", "python")
