@@ -26,14 +26,15 @@ scalar lists.
 
 ## ASV comparison with 0.1.0
 
-On the same machine, ten-round CPython 3.14 ASV comparisons on 2026-10-03
-measured the 10,000-key flat merge at 337 ± 4 µs on the published 0.1.0 source
-and 308 ± 4 µs on current `master` (about 9% faster). A wide mixed case with
-one nested value at the end measured 282 ± 2 µs and 251 ± 2 µs respectively
-(about 11% faster). Replacing a 10,000-item scalar list improved from 18.2 ±
-0.7 µs to 14.0 ± 0.9 µs (about 23%); concatenating two such lists improved
-from 35.2 ± 2 µs to 27.3 ± 0.3 µs (about 22%). The remaining merge benchmarks
-showed no significant change in the five-round comparison.
+On the same machine, a 20-repeat CPU-pinned CPython 3.14 ASV comparison on
+2026-10-03 measured the 10,000-key flat merge at 342 ± 4 µs on the published
+0.1.0 source and 302 ± 5 µs on current `master` (about 12% faster, below ASV's
+1.15 threshold). A wide mixed case with one nested value at the end improved
+from 285 ± 3 µs to 244 ± 4 µs (about 14%). Replacing a 10,000-item scalar list
+improved from 20.4 ± 0.6 µs to 15.1 ± 0.9 µs (about 26%); concatenating two
+such lists improved from 39.0 ± 0.8 µs to 28.3 ± 1 µs (about 27%). The
+32-key mixed case with a nested value last improved from 3.00 ± 0.4 µs to
+2.11 ± 0.3 µs (about 30%).
 
 The maintained Airspeed Velocity suite runs each implementation on the same
 workloads and compares revisions statistically. Run it from the project root:
@@ -47,9 +48,9 @@ the selected revision in release mode before measuring it.
 
 The scalar subtree copy path was then changed to scan dictionary entries
 without creating Python wrappers for scalar values. Twenty-repeat CPU-pinned
-CPython 3.14 ASV measurements put this 10,000-key copy at 50.3 ± 1 µs before
-and 38.8 ± 0.8 µs after (about 23% faster). With a nested value at the end, it
-improved from 50.3 ± 0.5 µs to 38.4 ± 0.9 µs (about 24%). A ten-repeat
+CPython 3.14 ASV measurements put this 10,000-key copy at 50.1 ± 0.5 µs before
+and 38.7 ± 0.8 µs after (about 23% faster). With a nested value at the end, it
+improved from 50.4 ± 0.5 µs to 38.7 ± 0.9 µs (about 23%). A ten-repeat
 CPython 3.11 comparison measured 49.6 ± 0.5 µs and 43.1 ± 1 µs (about 13%
 faster, below ASV's 1.15 change threshold). The flat merge workload showed no
 significant change on either version. Large integer-key maps also showed no
@@ -60,8 +61,8 @@ prove it can safely bulk-update them. Copies of scalar-only dictionaries from
 1 to 256 entries showed no significant change, so the direct scan remains
 unconditional in the subtree-copy path.
 For a 32-key map with a nested value last, a 20-repeat CPU-pinned comparison
-improved from 2.37 ± 0.2 µs on the published source to 1.86 ± 0.2 µs on current
-`master` (about 22% faster) on CPython 3.14. CPython 3.11 improved from 2.22 ±
+improved from 3.00 ± 0.4 µs on the published source to 2.11 ± 0.3 µs on current
+`master` (about 30% faster) on CPython 3.14. CPython 3.11 improved from 2.22 ±
 0.1 µs to 1.36 ± 0.08 µs (about 39%). The raw-scan path now starts at 8
 entries and only bulk-updates after the first 2 entries contain no nested
 containers. Moving the cutoff from 16 to
