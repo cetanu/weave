@@ -1,0 +1,66 @@
+name: Performance history
+
+on:
+  push:
+    branches: [master]
+    paths-ignore:
+      - benchmarks/performance-data.json
+      - benchmarks/performance.html
+
+permissions:
+  contents: write
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: astral-sh/setup-uv@v10.2.0
+      - run: uv sync --locked
+      - name: Register benchmark runner
+        run: |
+          os_name="$(. /etc/os-release && echo "$PRETTY_NAME")"
+          cpu="$(lscpu | awk -F: '/Model name/ {gsub(/^[[:space:]]+/, "", $2); print $2; exit}')"
+          ram="$(awk '/MemTotal/ {printf "%.0fGB", $2 / 1048576}' /proc/meminfo)"
+          uv run asv machine --yes \
+            --machine github-ubuntu-x64 \
+            --os "$os_name" --arch "$(uname -m)" --cpu "$cpu" \
+            --num_cpu "$(nproc)" --ram "$ram"
+      - name: Benchmark merged revision
+        env:
+          COMMIT: ${{ github.sha }}
+        run: >-
+          uv run asv run "${COMMIT}^!"
+          --bench 'time_(flat|wide_mixed_late|medium_mixed_late|copy_subtree(_mixed_late)?|list_replace|list_concat)_weave'
+          --interleave-rounds --machine github-ubuntu-x64
+      - name: Update and commit the report
+        env:
+          COMMIT: ${{ github.sha }}
+        run: |
+          git fetch origin master
+          git checkout -B master origin/master
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for attempt in 1 2 3 4 5; do
+            python benchmarks/update_performance_report.py "$COMMIT"
+            git add benchmarks/performance-data.json benchmarks/performance.html
+            if git diff --cached --quiet; then
+              echo "Benchmark history already contains $COMMIT"
+              exit 0
+            fi
+            git commit -m "Record ASV benchmark history"
+            if git push origin master; then
+              exit 0
+            fi
+            git fetch origin master
+            git reset --hard origin/master
+          done
+          echo "Could not push benchmark history after five attempts" >&2
+          exit 1

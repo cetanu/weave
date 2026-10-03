@@ -93,3 +93,7 @@ own workload; Python allocation and key hashing still determine much of the cost
 
 See [local benchmark results](benchmarks/README.md) for measured timings and
 the machine and sampling conditions.
+
+The merge-to-merge timing report is generated at
+[`benchmarks/performance.html`](benchmarks/performance.html). Download the file
+and open it in a browser to view the interactive charts.

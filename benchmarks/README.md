@@ -28,6 +28,12 @@ scalar lists.
 
 ![Chart of selected CPython 3.14 performance gains](performance.svg)
 
+The [interactive report](performance.html) is a single self-contained HTML file.
+On each push to `master`, GitHub Actions benchmarks the merged revision, appends
+the measurements to `performance-data.json`, and regenerates the report. Download
+the HTML file and open it in a browser; no hosted Pages site is needed. The first
+automated datapoint will be recorded after this workflow lands.
+
 On the same machine, a 20-repeat CPU-pinned CPython 3.14 ASV comparison on
 2026-10-03 measured the 10,000-key flat merge at 342 ± 4 µs on the published
 0.1.0 source and 302 ± 5 µs on current `master` (about 12% faster, below ASV's
