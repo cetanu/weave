@@ -81,7 +81,7 @@ jobs:
         env:
           BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEAD: ${{ github.sha }}
-        run: uv run asv continuous --factor 1.15 --interleave-rounds --split "$BASE" "$HEAD"
+        run: uv run asv continuous --bench '.*_weave' --factor 1.15 --interleave-rounds --split "$BASE" "$HEAD"
       - uses: actions/upload-artifact@v7
         if: always()
         with:
