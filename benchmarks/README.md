@@ -62,5 +62,8 @@ unconditional in the subtree-copy path.
 For a 32-key map with a nested value last, the merge improved from 2.14 ± 0.07
 µs on the published source to 1.33 ± 0.08 µs on current `master` (about 38%
 faster). A ten-repeat comparison also showed about 37% improvement on CPython
-3.11. The raw-scan path now starts at 16 entries and only bulk-updates after
-the first 16 entries contain no nested containers.
+3.11. The raw-scan path now starts at 8 entries and only bulk-updates after
+the first 4 entries contain no nested containers. Moving the cutoff from 16 to
+8 improved the 8-entry late-nested case from 1.40 ± 0.08 µs to 1.16 ± 0.06 µs
+(about 17%); the 4-entry case showed no significant change against the
+published source.
