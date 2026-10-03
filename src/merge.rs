@@ -20,7 +20,7 @@ pub(crate) fn merge_dicts<'py>(
         }
     }
 
-    if right.len() >= 64 {
+    if right.len() >= 16 {
         let py = left.py();
         let mut position = 0;
         let mut key_ptr = std::ptr::null_mut();
@@ -51,7 +51,7 @@ pub(crate) fn merge_dicts<'py>(
             let is_container = unsafe {
                 pyo3::ffi::PyDict_Check(value_ptr) != 0 || pyo3::ffi::PyList_Check(value_ptr) != 0
             };
-            if inspected < 64 && is_container {
+            if inspected < 16 && is_container {
                 prefix_contains_containers = true;
                 break;
             } else if is_container {
