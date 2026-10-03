@@ -139,9 +139,31 @@ fn copy_value<'py>(value: &Bound<'py, PyAny>, depth: usize) -> PyResult<Bound<'p
     if let Ok(dict) = value.cast::<PyDict>() {
         let _guard = RecursionGuard::enter(value.py(), depth)?;
         let result = dict.copy()?;
-        for (key, child) in dict.iter() {
-            if is_container(&child) {
-                result.set_item(key, copy_value(&child, depth + 1)?)?;
+        let py = value.py();
+        let mut position = 0;
+        let mut key_ptr = std::ptr::null_mut();
+        let mut child_ptr = std::ptr::null_mut();
+        loop {
+            // SAFETY: `dict` remains alive and unmodified during the scan, and
+            // the GIL is held for the full call.
+            if unsafe {
+                pyo3::ffi::PyDict_Next(dict.as_ptr(), &mut position, &mut key_ptr, &mut child_ptr)
+            } == 0
+            {
+                break;
+            }
+            // SAFETY: PyDict_Next returned a live value pointer while `dict`
+            // is alive and the GIL remains held.
+            let is_container = unsafe {
+                pyo3::ffi::PyDict_Check(child_ptr) != 0
+                    || pyo3::ffi::PyList_Check(child_ptr) != 0
+            };
+            if is_container {
+                // SAFETY: both pointers are borrowed from the live `dict`;
+                // the constructors increment their references for these Bounds.
+                let key = unsafe { Bound::from_borrowed_ptr(py, key_ptr) };
+                let child = unsafe { Bound::from_borrowed_ptr(py, child_ptr) };
+                result.set_item(&key, copy_value(&child, depth + 1)?)?;
             }
         }
         Ok(result.into_any())
