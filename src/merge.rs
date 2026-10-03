@@ -85,9 +85,10 @@ pub(crate) fn merge_dicts<'py>(
             )?;
         }
         return Ok(result);
-    } else if right
-        .iter()
-        .all(|(key, value)| !is_container(&value) && key.is_exact_instance_of::<PyString>())
+    } else if right.len() >= 4
+        && right
+            .iter()
+            .all(|(key, value)| !is_container(&value) && key.is_exact_instance_of::<PyString>())
     {
         result.update(right.as_mapping())?;
         return Ok(result);
