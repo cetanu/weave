@@ -50,11 +50,16 @@ The scalar subtree copy path was then changed to scan dictionary entries
 without creating Python wrappers for scalar values. Twenty-repeat CPU-pinned
 CPython 3.14 ASV measurements put this 10,000-key copy at 50.1 ± 0.5 µs before
 and 38.7 ± 0.8 µs after (about 23% faster). With a nested value at the end, it
-improved from 50.4 ± 0.5 µs to 38.7 ± 0.9 µs (about 23%). A ten-repeat
-CPython 3.11 comparison measured 49.6 ± 0.5 µs and 43.1 ± 1 µs (about 13%
-faster, below ASV's 1.15 change threshold). The flat merge workload showed no
-significant change on either version. Large integer-key maps also showed no
-significant change. A string map with one integer key at the end measured
+improved from 50.4 ± 0.5 µs to 38.7 ± 0.9 µs (about 23%). A 20-repeat
+CPU-pinned CPython 3.11 comparison measured 48.4 ± 0.7 µs and 44.0 ± 1 µs
+(about 9% faster, below ASV's 1.15 change threshold). With a nested value at
+the end, it improved from 50.3 ± 1 µs to 44.9 ± 1 µs (about 11%). On CPython
+3.11, list replacement improved from 14.7 ± 0.3 µs to 11.2 ± 0.2 µs (about
+24%) and concatenation from 28.3 ± 0.4 µs to 21.9 ± 0.3 µs (about 23%). The
+flat merge improved from 358 ± 4 µs to 340 ± 3 µs and the wide mixed merge
+from 293 ± 5 µs to 276 ± 5 µs on CPython 3.11; both stayed below the 1.15
+threshold. Large integer-key maps also showed no significant change. A string
+map with one integer key at the end measured
 279 ± 3 µs on the published source and 307 ± 3 µs on current `master` (about
 10% slower, below the 1.15 threshold); the optimized path must scan keys to
 prove it can safely bulk-update them. Copies of scalar-only dictionaries from
@@ -62,8 +67,8 @@ prove it can safely bulk-update them. Copies of scalar-only dictionaries from
 unconditional in the subtree-copy path.
 For a 32-key map with a nested value last, a 20-repeat CPU-pinned comparison
 improved from 3.00 ± 0.4 µs on the published source to 2.11 ± 0.3 µs on current
-`master` (about 30% faster) on CPython 3.14. CPython 3.11 improved from 2.22 ±
-0.1 µs to 1.36 ± 0.08 µs (about 39%). The raw-scan path now starts at 8
+`master` (about 30% faster) on CPython 3.14. CPython 3.11 improved from 2.18 ±
+0.2 µs to 1.42 ± 0.1 µs (about 35%). The raw-scan path now starts at 8
 entries and only bulk-updates after the first 2 entries contain no nested
 containers. Moving the cutoff from 16 to
 8 improved the 8-entry late-nested case from 1.73 ± 0.2 µs to 1.28 ± 0.2 µs
