@@ -59,11 +59,12 @@ significant change. A string map with one integer key at the end measured
 prove it can safely bulk-update them. Copies of scalar-only dictionaries from
 1 to 256 entries showed no significant change, so the direct scan remains
 unconditional in the subtree-copy path.
-For a 32-key map with a nested value last, the merge improved from 2.14 ± 0.07
-µs on the published source to 1.33 ± 0.08 µs on current `master` (about 38%
-faster). A ten-repeat comparison also showed about 37% improvement on CPython
-3.11. The raw-scan path now starts at 8 entries and only bulk-updates after
-the first 4 entries contain no nested containers. Moving the cutoff from 16 to
+For a 32-key map with a nested value last, a 20-repeat CPU-pinned comparison
+improved from 2.37 ± 0.2 µs on the published source to 1.86 ± 0.2 µs on current
+`master` (about 22% faster) on CPython 3.14. CPython 3.11 improved from 2.22 ±
+0.1 µs to 1.36 ± 0.08 µs (about 39%). The raw-scan path now starts at 8
+entries and only bulk-updates after the first 4 entries contain no nested
+containers. Moving the cutoff from 16 to
 8 improved the 8-entry late-nested case from 1.73 ± 0.2 µs to 1.28 ± 0.2 µs
 (about 26%) in a 20-repeat CPU-pinned CPython 3.14 comparison. The matching
 CPython 3.11 run showed no significant change. Four-entry mixed maps and
