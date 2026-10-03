@@ -27,9 +27,9 @@ scalar lists.
 ## ASV comparison with 0.1.0
 
 On the same machine, ten-round CPython 3.14 ASV comparisons on 2026-10-03
-measured the 10,000-key flat merge at 342 ± 4 µs on the published 0.1.0 source
-and 308 ± 3 µs on current `master` (about 10% faster). A wide mixed case with
-one nested value at the end measured 285 ± 4 µs and 253 ± 4 µs respectively
+measured the 10,000-key flat merge at 338 ± 3 µs on the published 0.1.0 source
+and 305 ± 2 µs on current `master` (about 10% faster). A wide mixed case with
+one nested value at the end measured 284 ± 2 µs and 252 ± 2 µs respectively
 (about 11% faster). The other merge benchmarks showed no significant change
 in the five-round comparison.
 
