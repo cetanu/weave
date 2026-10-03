@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="390" viewBox="0 0 880 390" role="img" aria-labelledby="title desc">
+  <title id="title">Weaved performance change versus published 0.1.0</title>
+  <desc id="desc">Elapsed time normalized to published 0.1.0, based on CPU-pinned CPython 3.14 ASV measurements. Current master is faster in all five shown workloads.</desc>
+  <style>
+    text { font-family: system-ui, sans-serif; fill: #202124; }
+    .title { font-size: 21px; font-weight: 650; }
+    .subtitle { font-size: 13px; fill: #5f6368; }
+    .label { font-size: 14px; }
+    .value { font-size: 13px; font-weight: 600; }
+    .axis { font-size: 12px; fill: #5f6368; }
+    .grid { stroke: #dadce0; stroke-width: 1; }
+  </style>
+  <text x="32" y="38" class="title">Performance gains vs published 0.1.0</text>
+  <text x="32" y="61" class="subtitle">CPython 3.14 · 20-repeat CPU-pinned ASV comparison · lower time is better</text>
+  <rect x="565" y="78" width="12" height="12" rx="2" fill="#9aa0a6"/><text x="584" y="89" class="axis">0.1.0 baseline</text>
+  <rect x="700" y="78" width="12" height="12" rx="2" fill="#188038"/><text x="719" y="89" class="axis">current master</text>
+  <text x="32" y="137" class="label">Wide mixed merge</text>
+  <rect x="270" y="119" width="196" height="12" rx="3" fill="#9aa0a6"/><rect x="270" y="135" width="169" height="12" rx="3" fill="#188038"/><text x="480" y="145" class="value">14% faster</text>
+  <text x="32" y="181" class="label">10k-key subtree copy</text>
+  <rect x="270" y="163" width="196" height="12" rx="3" fill="#9aa0a6"/><rect x="270" y="179" width="151" height="12" rx="3" fill="#188038"/><text x="480" y="189" class="value">23% faster</text>
+  <text x="32" y="225" class="label">10k-item list replace</text>
+  <rect x="270" y="207" width="196" height="12" rx="3" fill="#9aa0a6"/><rect x="270" y="223" width="145" height="12" rx="3" fill="#188038"/><text x="480" y="233" class="value">26% faster</text>
+  <text x="32" y="269" class="label">10k-item list concatenate</text>
+  <rect x="270" y="251" width="196" height="12" rx="3" fill="#9aa0a6"/><rect x="270" y="267" width="143" height="12" rx="3" fill="#188038"/><text x="480" y="277" class="value">27% faster</text>
+  <text x="32" y="313" class="label">32-key mixed merge</text>
+  <rect x="270" y="295" width="196" height="12" rx="3" fill="#9aa0a6"/><rect x="270" y="311" width="137" height="12" rx="3" fill="#188038"/><text x="480" y="321" class="value">30% faster</text>
+  <text x="32" y="377" class="subtitle">Bars show relative elapsed time (baseline = 100); only selected high-signal workloads are shown.</text>
+</svg>
