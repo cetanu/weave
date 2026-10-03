@@ -24,6 +24,15 @@ reference recursively visits scalar list elements; Weave uses native copies and
 only recurses into containers, which accounts for the larger improvement on
 scalar lists.
 
+## ASV comparison with 0.1.0
+
+On the same machine, CPython 3.14 ASV runs on 2026-10-03 measured the 10,000-key
+flat merge at 341 ± 5 µs on the published 0.1.0 source and 312 ± 3 µs after the
+bulk-update optimization (about 8% faster). A new wide mixed case with one
+nested value at the end measured 282 ± 2 µs and 256 ± 2 µs respectively (about
+9% faster). The other merge benchmarks showed no significant change in the
+five-round comparison.
+
 The maintained Airspeed Velocity suite runs each implementation on the same
 workloads and compares revisions statistically. Run it from the project root:
 
