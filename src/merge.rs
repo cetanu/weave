@@ -173,10 +173,27 @@ fn copy_list<'py>(
         None => list.get_slice(0, list.len()),
     };
 
-    for (index, child) in result.iter().enumerate() {
-        if is_container(&child) {
-            result.set_item(index, copy_value(&child, depth + 1)?)?;
+    // SAFETY: `result` is a live Python list and the GIL is held.
+    let len = unsafe { pyo3::ffi::PyList_GET_SIZE(result.as_ptr()) };
+    let mut index = 0;
+    loop {
+        if index >= len {
+            break;
         }
+
+        // SAFETY: the index is in range and `result` remains alive under the GIL.
+        let child_ptr = unsafe { pyo3::ffi::PyList_GET_ITEM(result.as_ptr(), index) };
+        // SAFETY: PyList_GET_ITEM returns a live borrowed item for this list.
+        let is_container = unsafe {
+            pyo3::ffi::PyDict_Check(child_ptr) != 0 || pyo3::ffi::PyList_Check(child_ptr) != 0
+        };
+        if is_container {
+            // SAFETY: the pointer is borrowed from the live list; the constructor
+            // increments its reference for this Bound.
+            let child = unsafe { Bound::from_borrowed_ptr(list.py(), child_ptr) };
+            result.set_item(index as usize, copy_value(&child, depth + 1)?)?;
+        }
+        index += 1;
     }
     Ok(result)
 }
