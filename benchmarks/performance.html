@@ -17,7 +17,7 @@ svg{width:100%;height:185px;overflow:visible}.axis{stroke:#dadce0}
 the same run. Higher is faster; ratios reduce noise from runner speed changes.</p>
 <div id="charts" class="grid"></div>
 <script>
-const data=[];
+const data=[{"commit":"8958a2685df102d19ba8aa99d6b42c5f526befb2","date":"2026-10-03T05:37:41+00:00","benchmarks":{"flat":{"weave_seconds":0.0006305225000033943,"python_seconds":0.004389270999993755,"speedup":6.961323346859353},"wide mixed":{"weave_seconds":0.0005261615000051734,"python_seconds":0.004277858499996512,"speedup":8.130314551624265},"medium mixed":{"weave_seconds":4.553999993106572e-06,"python_seconds":1.388599999785356e-05,"speedup":3.0491875315926467},"subtree copy":{"weave_seconds":7.963400000221554e-05,"python_seconds":0.0019127625000052717,"speedup":24.019420096341456},"mixed subtree copy":{"weave_seconds":8.159349999914411e-05,"python_seconds":0.0019043614999958436,"speedup":23.33962264170332},"list replace":{"weave_seconds":3.2576500004211084e-05,"python_seconds":0.0013253900000052,"speedup":40.685463442477555},"list concatenate":{"weave_seconds":6.386949999637181e-05,"python_seconds":0.0026832065000022,"speedup":42.01076413866748}}}];
 const ns='http://www.w3.org/2000/svg';
 function el(tag,attrs={}){
  const n=document.createElementNS(ns,tag);
