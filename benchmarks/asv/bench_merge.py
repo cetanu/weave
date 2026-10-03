@@ -71,6 +71,7 @@ def cases():
     wide_right["key9999"] = {"after": [2]}
     medium_left = {f"key{i}": i for i in range(32)}
     medium_right = {f"other{i}": -i for i in range(32)}
+    copied_subtree = {f"key{i}": i for i in range(10_000)}
     return [
         BenchCase("tiny", {"a": 1, "b": 2}, {"b": 3, "c": 4}),
         BenchCase(
@@ -91,6 +92,7 @@ def cases():
         BenchCase("overwritten", {"items": overwritten}, {"items": None}),
         BenchCase("wide_mixed_late", wide_left, wide_right),
         BenchCase("medium", medium_left, medium_right),
+        BenchCase("copy_subtree", {}, {"config": copied_subtree}),
     ]
 
 
@@ -172,3 +174,9 @@ class MergeBenchmarks:
 
     def time_medium_python(self):
         self._run("medium", "python")
+
+    def time_copy_subtree_weave(self):
+        self._run("copy_subtree", "weave")
+
+    def time_copy_subtree_python(self):
+        self._run("copy_subtree", "python")
