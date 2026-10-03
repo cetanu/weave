@@ -8,7 +8,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DATA_PATH = ROOT / "benchmarks" / "performance-data.json"
 HTML_PATH = ROOT / "benchmarks" / "performance.html"
-MACHINE = "github-ubuntu-x64"
 ENVIRONMENT = "virtualenv-py3.14"
 BENCHMARKS = {
     "flat": "time_flat_weave",
@@ -22,8 +21,8 @@ BENCHMARKS = {
 
 
 def load_measurements(commit):
-    files = ROOT / ".asv" / "results" / MACHINE
-    for path in sorted(files.glob("*.json")):
+    files = ROOT / ".asv" / "results"
+    for path in sorted(files.rglob("*.json")):
         result_file = json.loads(path.read_text())
         if "commit_hash" not in result_file:
             continue
