@@ -38,7 +38,7 @@ jobs:
           COMMIT: ${{ github.sha }}
         run: >-
           uv run asv run "${COMMIT}^!"
-          --bench 'time_(flat|wide_mixed_late|medium_mixed_late|copy_subtree(_mixed_late)?|list_replace|list_concat)_weave'
+          --bench 'time_(flat|wide_mixed_late|medium_mixed_late|copy_subtree(_mixed_late)?|list_replace|list_concat)_(weave|python)'
           --interleave-rounds --machine github-ubuntu-x64
       - name: Update and commit the report
         env:

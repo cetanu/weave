@@ -29,10 +29,11 @@ scalar lists.
 ![Chart of selected CPython 3.14 performance gains](performance.svg)
 
 The [interactive report](performance.html) is a single self-contained HTML file.
-On each push to `master`, GitHub Actions benchmarks the merged revision, appends
-the measurements to `performance-data.json`, and regenerates the report. Download
-the HTML file and open it in a browser; no hosted Pages site is needed. The first
-automated datapoint will be recorded after this workflow lands.
+On each push to `master`, GitHub Actions measures Weaved and the Python reference
+in the same ASV run, appends their speedup ratios to `performance-data.json`, and
+regenerates the report. The ratios reduce variation between hosted runner
+instances. Download the HTML and open it in a browser; no hosted Pages site is
+needed.
 
 On the same machine, a 20-repeat CPU-pinned CPython 3.14 ASV comparison on
 2026-10-03 measured the 10,000-key flat merge at 342 ± 4 µs on the published

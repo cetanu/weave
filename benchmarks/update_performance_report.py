@@ -10,14 +10,21 @@ DATA_PATH = ROOT / "benchmarks" / "performance-data.json"
 HTML_PATH = ROOT / "benchmarks" / "performance.html"
 ENVIRONMENT = "virtualenv-py3.14"
 BENCHMARKS = {
-    "flat": "time_flat_weave",
-    "wide mixed": "time_wide_mixed_late_weave",
-    "medium mixed": "time_medium_mixed_late_weave",
-    "subtree copy": "time_copy_subtree_weave",
-    "mixed subtree copy": "time_copy_subtree_mixed_late_weave",
-    "list replace": "time_list_replace_weave",
-    "list concatenate": "time_list_concat_weave",
+    "flat": "flat",
+    "wide mixed": "wide_mixed_late",
+    "medium mixed": "medium_mixed_late",
+    "subtree copy": "copy_subtree",
+    "mixed subtree copy": "copy_subtree_mixed_late",
+    "list replace": "list_replace",
+    "list concatenate": "list_concat",
 }
+
+
+def result_value(result):
+    value = result[0] if result else None
+    while isinstance(value, list) and value:
+        value = value[0]
+    return value if isinstance(value, (int, float)) else None
 
 
 def load_measurements(commit):
@@ -29,13 +36,18 @@ def load_measurements(commit):
         if result_file["commit_hash"] != commit or result_file["env_name"] != ENVIRONMENT:
             continue
         values = {}
-        for label, benchmark in BENCHMARKS.items():
-            result = result_file["results"].get(f"bench_merge.MergeBenchmarks.{benchmark}")
-            measurement = result[0] if result else None
-            while isinstance(measurement, list) and measurement:
-                measurement = measurement[0]
-            if isinstance(measurement, (int, float)):
-                values[label] = measurement
+        for label, workload in BENCHMARKS.items():
+            results = result_file["results"]
+            weave = result_value(results.get(f"bench_merge.MergeBenchmarks.time_{workload}_weave"))
+            python = result_value(
+                results.get(f"bench_merge.MergeBenchmarks.time_{workload}_python")
+            )
+            if weave and python:
+                values[label] = {
+                    "weave_seconds": weave,
+                    "python_seconds": python,
+                    "speedup": python / weave,
+                }
         if values:
             return result_file["date"], values
     raise SystemExit(f"No CPython 3.14 ASV results found for {commit}")
@@ -57,9 +69,9 @@ svg{width:100%;height:185px;overflow:visible}.axis{stroke:#dadce0}
 .line{fill:none;stroke:#188038;stroke-width:2.5}.dot{fill:#188038}.tick{fill:#5f6368;font-size:11px}
 </style>
 <h1>Weaved performance history</h1>
-<p>Selected ASV timings on GitHub Actions, CPython 3.14.</p>
-<p>Each chart is normalized to its first recorded merge (100); lower is faster.
-Runner noise can affect small changes.</p>
+<p>Selected ASV speedups on GitHub Actions, CPython 3.14.</p>
+<p>Each point is Weaved versus the equivalent Python implementation measured in
+the same run. Higher is faster; ratios reduce noise from runner speed changes.</p>
 <div id="charts" class="grid"></div>
 <script>
 const data=__DATA__;
@@ -71,12 +83,11 @@ function el(tag,attrs={}){
 }
 const names=[...new Set(data.flatMap(r=>Object.keys(r.benchmarks)))];
 for(const name of names){
- const rows=data.filter(r=>Number.isFinite(r.benchmarks[name]));
+ const rows=data.filter(r=>r.benchmarks[name]&&Number.isFinite(r.benchmarks[name].speedup));
  if(!rows.length)continue;
- const base=rows[0].benchmarks[name];
- const values=rows.map(r=>100*r.benchmarks[name]/base);
- const low=Math.min(95,...values),high=Math.max(105,...values);
- const pad=(high-low)*.12||5,min=low-pad,max=high+pad;
+ const values=rows.map(r=>r.benchmarks[name].speedup);
+ const low=Math.min(1,...values),high=Math.max(1,...values);
+ const pad=(high-low)*.12||.1,min=low-pad,max=high+pad;
  const W=500,H=185,L=48,R=12,T=14,B=30;
  const iw=W-L-R,ih=H-T-B;
  const x=i=>L+(rows.length===1?iw/2:i*iw/(rows.length-1));
@@ -86,15 +97,16 @@ for(const name of names){
   const yy=y(v);
   svg.append(el('line',{x1:L,y1:yy,x2:W-R,y2:yy,class:'axis'}));
   const t=el('text',{x:L-6,y:yy+4,'text-anchor':'end',class:'tick'});
-  t.textContent=v.toFixed(0);svg.append(t);
+  t.textContent=v.toFixed(1)+'×';svg.append(t);
  }
+ svg.append(el('line',{x1:L,y1:y(1),x2:W-R,y2:y(1),class:'axis'}));
  svg.append(el('polyline',{points:values.map((v,i)=>`${x(i)},${y(v)}`).join(' '),class:'line'}));
  rows.forEach((r,i)=>{
   const dot=el('circle',{cx:x(i),cy:y(values[i]),r:4,class:'dot'});
   const tip=el('title');
   const date=new Date(r.date).toLocaleDateString();
-  const time=(r.benchmarks[name]*1e6).toFixed(2);
-  tip.textContent=`${r.commit.slice(0,7)} · ${date} · ${time} µs`;
+  const speedup=r.benchmarks[name].speedup.toFixed(2);
+  tip.textContent=`${r.commit.slice(0,7)} · ${date} · ${speedup}× faster than Python`;
   dot.append(tip);svg.append(dot);
  });
  const a=el('text',{x:L,y:H-5,class:'tick'});a.textContent=rows[0].commit.slice(0,7);svg.append(a);
