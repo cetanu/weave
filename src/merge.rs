@@ -21,11 +21,32 @@ pub(crate) fn merge_dicts<'py>(
     }
 
     if right.len() >= 64 {
-        let mut entries = right.iter();
-        let prefix_contains_containers = entries
-            .by_ref()
-            .take(64)
-            .any(|(_, value)| is_container(&value));
+        let py = left.py();
+        let mut position = 0;
+        let mut key_ptr = std::ptr::null_mut();
+        let mut value_ptr = std::ptr::null_mut();
+        let mut inspected = 0;
+        let mut prefix_contains_containers = false;
+
+        while inspected < 64 {
+            // SAFETY: `right` remains alive and unmodified for this scan, and
+            // the GIL is held for the full call.
+            if unsafe {
+                pyo3::ffi::PyDict_Next(right.as_ptr(), &mut position, &mut key_ptr, &mut value_ptr)
+            } == 0
+            {
+                break;
+            }
+            // SAFETY: PyDict_Next returned a live value pointer while `right`
+            // is alive and the GIL remains held.
+            if unsafe {
+                pyo3::ffi::PyDict_Check(value_ptr) != 0 || pyo3::ffi::PyList_Check(value_ptr) != 0
+            } {
+                prefix_contains_containers = true;
+                break;
+            }
+            inspected += 1;
+        }
 
         if prefix_contains_containers {
             for (key, right_value) in right.iter() {
@@ -38,8 +59,23 @@ pub(crate) fn merge_dicts<'py>(
         }
 
         result.update(right.as_mapping())?;
-        for (key, right_value) in entries {
-            if is_container(&right_value) {
+        loop {
+            // SAFETY: `right` is still alive and unmodified, and the GIL is held.
+            if unsafe {
+                pyo3::ffi::PyDict_Next(right.as_ptr(), &mut position, &mut key_ptr, &mut value_ptr)
+            } == 0
+            {
+                break;
+            }
+
+            // SAFETY: PyDict_Next returned a live value pointer under the GIL.
+            if unsafe {
+                pyo3::ffi::PyDict_Check(value_ptr) != 0 || pyo3::ffi::PyList_Check(value_ptr) != 0
+            } {
+                // SAFETY: both pointers are borrowed from the live `right` dict;
+                // the constructors increment their references for these Bounds.
+                let key = unsafe { Bound::from_borrowed_ptr(py, key_ptr) };
+                let right_value = unsafe { Bound::from_borrowed_ptr(py, value_ptr) };
                 result.set_item(
                     &key,
                     merge_entry(left, &key, &right_value, concat_lists, depth + 1)?,
