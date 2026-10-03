@@ -66,4 +66,4 @@ faster). A ten-repeat comparison also showed about 37% improvement on CPython
 the first 4 entries contain no nested containers. Moving the cutoff from 16 to
 8 improved the 8-entry late-nested case from 1.40 ± 0.08 µs to 1.16 ± 0.06 µs
 (about 17%); the 4-entry case showed no significant change against the
-published source.
+published source. An 8-entry scalar-only merge showed no significant change.
