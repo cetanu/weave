@@ -20,6 +20,11 @@ pub(crate) fn merge_dicts<'py>(
         }
     }
 
+    if right.len() >= 64 && !right.iter().any(|(_, value)| is_container(&value)) {
+        result.update(right.as_mapping())?;
+        return Ok(result);
+    }
+
     for (key, right_value) in right.iter() {
         result.set_item(
             &key,
