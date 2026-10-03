@@ -75,6 +75,8 @@ def cases():
     medium_mixed_late["nested"] = {"value": [1]}
     small_mixed_late = {f"key{i}": -i for i in range(7)}
     small_mixed_late["nested"] = {"value": [1]}
+    tiny_mixed_late = {f"key{i}": -i for i in range(3)}
+    tiny_mixed_late["nested"] = {"value": [1]}
     copied_subtree = {f"key{i}": i for i in range(10_000)}
     copied_subtrees = {size: {f"key{i}": i for i in range(size)} for size in (1, 8, 32, 256)}
     copied_subtree_mixed_late = {f"key{i}": i for i in range(10_000)}
@@ -104,6 +106,7 @@ def cases():
         BenchCase("medium", medium_left, medium_right),
         BenchCase("medium_mixed_late", {}, medium_mixed_late),
         BenchCase("small_mixed_late", {}, small_mixed_late),
+        BenchCase("tiny_mixed_late", {}, tiny_mixed_late),
         BenchCase("copy_subtree", {}, {"config": copied_subtree}),
         *[
             BenchCase(f"copy_subtree_{size}", {}, {"config": subtree})
@@ -205,6 +208,12 @@ class MergeBenchmarks:
 
     def time_small_mixed_late_python(self):
         self._run("small_mixed_late", "python")
+
+    def time_tiny_mixed_late_weave(self):
+        self._run("tiny_mixed_late", "weave")
+
+    def time_tiny_mixed_late_python(self):
+        self._run("tiny_mixed_late", "python")
 
     def time_copy_subtree_weave(self):
         self._run("copy_subtree", "weave")
